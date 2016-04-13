@@ -1,9 +1,12 @@
 #include <iostream> // input output
 #include <cmath> // (for sqrt)
 #include <vector>
+#include <string>
 #include <tuple>
 #include "readParameters.hpp"
 #include "GetPot.hpp"
+#include "Norme_EF1.hpp"
+#include "My_Thomas.hpp"
 #include "gnuplot-iostream.hpp"// interface with gnuplot
 /*!
   @file main.cpp
@@ -61,56 +64,69 @@ int main(int argc, char** argv)
   const auto& Te=param.Te; // External temperature (Centigrades)
   const auto& k=param.k;  // Thermal conductivity
   const auto& hc=param.hc; // Convection coefficient
-  const auto&    M=param.M; // Number of grid elements
-  
+  const auto& M=param.M; // Number of grid elements
+  const auto& norma=param.norma;
+  const auto& Ex=param.Ex;
   //! Precomputed coefficient for adimensional form of equation
   const auto act=2.*(a1+a2)*hc*L*L/(k*a1*a2);
-
+  const auto GaussSiedel=param.Metodo;
   // mesh size
   const auto h=1./M;
   
   // Solution vector
   std::vector<double> theta(M+1);
+
   
   // Gauss Siedel is initialised with a linear variation
   // of T
-  
-  for(unsigned int m=0;m <= M;++m)
+  if(!GaussSiedel){
+    for(unsigned int m=0;m <= M;++m)
      theta[m]=(1.-m*h)*(To-Te)/Te;
   
-  // Gauss-Seidel
-  // epsilon=||x^{k+1}-x^{k}||
-  // Stopping criteria epsilon<=toler
+    // Gauss-Seidel
+    // epsilon=||x^{k+1}-x^{k}||
+    // Stopping criteria epsilon<=toler
   
-  int iter=0;
-  double xnew, epsilon;
-     do
-       { epsilon=0.;
+    int iter=0;
+    double xnew, epsilon,dOld;
+       do
+         { epsilon=0.;
+	   dOld=0.;
 
-	 // first M-1 row of linear system
-         for(int m=1;m < M;m++)
-         {   
-	   xnew  = (theta[m-1]+theta[m+1])/(2.+h*h*act);
-	   epsilon += (xnew-theta[m])*(xnew-theta[m]);
-	   theta[m] = xnew;
-         }
+	   // first M-1 row of linear system
+           for(int m=1;m < M;m++)
+           {   
+	     xnew  = (theta[m-1]+theta[m+1])/(2.+h*h*act);
+	   //epsilon += (xnew-theta[m])*(xnew-theta[m]);
+	     epsilon += norm_EF1(dOld,xnew-theta[m],h,norma);
+	     dOld=(xnew-theta[m]);
+	     theta[m] = xnew;
+           }
 
-	 //Last row
-	 xnew = theta[M-1]; 
-	 epsilon += (xnew-theta[M])*(xnew-theta[M]);
-	 theta[M]=  xnew; 
+	   //Last row
+	   xnew = theta[M-1]; 
+//	   epsilon += (xnew-theta[M])*(xnew-theta[M]);
+  	   epsilon += norm_EF1(dOld,xnew-theta[M],h,norma);
+	   theta[M]=  xnew; 
 
-	 iter=iter+1;     
-       }while((sqrt(epsilon) > toler) && (iter < itermax) );
+	   iter=iter+1;     
+         }while((sqrt(epsilon) > toler) && (iter < itermax) );
 
-    if(iter<itermax)
-      cout << "M="<<M<<"  Convergence in "<<iter<<" iterations"<<endl;
-    else
-      {
-	cerr << "NOT CONVERGING in "<<itermax<<" iterations "<<
-	  "||dx||="<<sqrt(epsilon)<<endl;
-	status=1;
-      }
+      if(iter<itermax)
+        cout << "M="<<M<<"  Convergence in "<<iter<<" iterations"<<endl;
+      else
+        {
+	  cerr << "NOT CONVERGING in "<<itermax<<" iterations "<<
+	    "||dx||="<<sqrt(epsilon)<<endl;
+	  status=1;
+        }
+    }
+    //Uso algoritmo di Thomas
+    else{
+      vector<double> a(M,-1.),b(M+1,2.+h*h*act),c(M,-1.),f(M+1,0.);
+      b[M]=1.; b[0]=1.;c[0]=0.;f[0]=(To-Te)/Te;
+      theta=My_Thomas(a,b,c,f);
+    }
 
  // Analitic solution
 
@@ -121,26 +137,38 @@ int main(int argc, char** argv)
      // writing results with format
      // x_i u_h(x_i) u(x_i) and lauch gnuplot 
 
-     Gnuplot gp;
      std::vector<double> coor(M+1);
      std::vector<double> sol(M+1);
      std::vector<double> exact(M+1);
+     if(Ex!=0)
+     {
+       cout<<"Result file: Inserisci il nome del file che vuoi in uscita (nel formato nome.dat)"<<endl;
+       string name;
+       cin>>name;
+       ofstream f(name);
+     
+       for(int m = 0; m<= M; m++)
+         {
+           // \t writes a tab 
+           f<<m*h*L<<"\t"<<Te*(1.+theta[m])<<"\t"<<thetaa[m]<<endl;
+	   
+         }
+       f.close();
+       
+     }
 
-     cout<<"Result file: result.dat"<<endl;
-     ofstream f("result.dat");
-     for(int m = 0; m<= M; m++)
-       {
-	 // \t writes a tab 
-         f<<m*h*L<<"\t"<<Te*(1.+theta[m])<<"\t"<<thetaa[m]<<endl;
-	 // An example of use of tie and tuples!
-         
-	 std::tie(coor[m],sol[m],exact[m])=
-	   std::make_tuple(m*h*L,Te*(1.+theta[m]),thetaa[m]);
-       }
-     // Using temporary files (another nice use of tie)
-     gp<<"plot"<<gp.file1d(std::tie(coor,sol))<<
-       "w lp title 'uh',"<< gp.file1d(std::tie(coor,exact))<<
-       "w l title 'uex'"<<std::endl;
-     f.close();
+     if(Ex!=1){
+       for(int m = 0; m<= M; m++)
+         {
+           // An example of use of tie and tuples!
+	   std::tie(coor[m],sol[m],exact[m])=
+	     std::make_tuple(m*h*L,Te*(1.+theta[m]),thetaa[m]);
+         }
+       Gnuplot gp;
+       // Using temporary files (another nice use of tie)
+       gp<<"plot"<<gp.file1d(std::tie(coor,sol))<<
+         "w lp title 'uh',"<< gp.file1d(std::tie(coor,exact))<<
+         "w l title 'uex'"<<std::endl;
+     }     
      return status;
 }
