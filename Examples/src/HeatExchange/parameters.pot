@@ -20,3 +20,9 @@ k=0.164
 hc=200.0e-6
 # Number of elements
 M=11
+# Uscita scelta
+Ex=2
+# Norma scelta
+norma=1
+# Metodo Scelto
+Metodo=0

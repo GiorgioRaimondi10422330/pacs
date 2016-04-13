@@ -23,7 +23,15 @@ struct parameters
   double hc;
   //! Number of elements
   int M;
+  //! Se voglio il grafico 0, se voglio i dati in uscita 1 , se voglio entrambi 2
+  int Ex;
+  //! Norma scelta: 0 ->L2, 1 ->H1
+  int norma;
+  //! Metodo di risoluzione 0->GaussSiedel  1->Thomas
+  int Metodo;
   //! Constructor takes default values
+  
+
   parameters():
     itermax(1000000),
     toler(1e-8),
@@ -34,7 +42,10 @@ struct parameters
     Te(20.),
     k(0.164),
     hc(1.e-6*200.),
-    M(100)
+    M(100),
+    Ex(2),
+    norma(0),
+    Metodo(0)
   {}
 };
 //! Prints parameters
