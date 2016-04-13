@@ -23,6 +23,8 @@ struct parameters
   double hc;
   //! Number of elements
   int M;
+  //! Nome del file in uscita
+  std::string Nome;
   //! Se voglio il grafico 0, se voglio i dati in uscita 1 , se voglio entrambi 2
   int Ex;
   //! Norma scelta: 0 ->L2, 1 ->H1

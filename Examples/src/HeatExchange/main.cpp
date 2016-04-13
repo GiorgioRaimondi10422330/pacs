@@ -67,12 +67,13 @@ int main(int argc, char** argv)
   const auto& M=param.M; // Number of grid elements
   const auto& norma=param.norma;
   const auto& Ex=param.Ex;
+  const auto Nome=param.Nome;
+  const auto GaussSiedel=param.Metodo;
   //! Precomputed coefficient for adimensional form of equation
   const auto act=2.*(a1+a2)*hc*L*L/(k*a1*a2);
-  const auto GaussSiedel=param.Metodo;
   // mesh size
   const auto h=1./M;
-  
+
   // Solution vector
   std::vector<double> theta(M+1);
 
@@ -142,10 +143,8 @@ int main(int argc, char** argv)
      std::vector<double> exact(M+1);
      if(Ex!=0)
      {
-       cout<<"Result file: Inserisci il nome del file che vuoi in uscita (nel formato nome.dat)"<<endl;
-       string name;
-       cin>>name;
-       ofstream f(name);
+       cout<<"Result file: "<<Nome<<endl;
+       ofstream f(Nome);
      
        for(int m = 0; m<= M; m++)
          {

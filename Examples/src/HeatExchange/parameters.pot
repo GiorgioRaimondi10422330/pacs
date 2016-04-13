@@ -20,6 +20,8 @@ k=0.164
 hc=200.0e-6
 # Number of elements
 M=11
+# Nome file in Uscita
+Nome=giorgio.dat
 # Uscita scelta
 Ex=2
 # Norma scelta
