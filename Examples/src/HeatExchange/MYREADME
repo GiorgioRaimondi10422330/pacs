@@ -1,0 +1,18 @@
+In questo branch trova la soluzione ai challenge
+
+1.1
+  Le modifiche sono state fatte nei parameters
+  Ex=0 ->Plot  Ex=1 ->file.dat  Ex=2 ->Entrambi
+
+1.2
+  aggiunto l'header norme_EF1
+    ricevono le y agli estremi, il passo h e un parametro che indica il metodo
+      Tipo=0 ->L2  Tipo=1 ->H1
+  per confrontare i tempi di convergenza eseguire lo script Challenge_1_2  
+
+1.3
+  aggiunto l'header My_Thomas.hpp
+  scelgo quale metodo usare tramite il parametro metodo
+  0 -> GaussSiedel  1 -> Thomas
+
+
