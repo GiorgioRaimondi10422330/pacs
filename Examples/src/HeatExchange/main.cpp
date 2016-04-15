@@ -65,109 +65,62 @@ int main(int argc, char** argv)
   const auto& k=param.k;  // Thermal conductivity
   const auto& hc=param.hc; // Convection coefficient
   const auto& M=param.M; // Number of grid elements
-  const auto& norma=param.norma;
-  const auto& Ex=param.Ex;
-  const auto Nome=param.Nome;
-  const auto GaussSiedel=param.Metodo;
+  const auto& Tempo0=param.Tempo0; //Tempo iniziale
+  const auto& Tempo1=param.Tempo1; //Tempo finale
+  const auto& N=param.N;  // Numero elementi temporali
   //! Precomputed coefficient for adimensional form of equation
   const auto act=2.*(a1+a2)*hc*L*L/(k*a1*a2);
   // mesh size
   const auto h=1./M;
+  const auto dt=(Tempo1-Tempo0)/N;
 
   // Solution vector
-  std::vector<double> theta(M+1);
+  std::vector<double> theta_old(M+1,(To-Te)/Te),theta(M+1);
+  const auto cfl=(dt/(h*h));
 
-  
-  // Gauss Siedel is initialised with a linear variation
-  // of T
-  if(!GaussSiedel){
-    for(unsigned int m=0;m <= M;++m)
-     theta[m]=(1.-m*h)*(To-Te)/Te;
-  
-    // Gauss-Seidel
-    // epsilon=||x^{k+1}-x^{k}||
-    // Stopping criteria epsilon<=toler
-  
-    int iter=0;
-    double xnew, epsilon,dOld;
-       do
-         { epsilon=0.;
-	   dOld=0.;
-
-	   // first M-1 row of linear system
-           for(int m=1;m < M;m++)
-           {   
-	     xnew  = (theta[m-1]+theta[m+1])/(2.+h*h*act);
-	   //epsilon += (xnew-theta[m])*(xnew-theta[m]);
-	     epsilon += norm_EF1(dOld,xnew-theta[m],h,norma);
-	     dOld=(xnew-theta[m]);
-	     theta[m] = xnew;
-           }
-
-	   //Last row
-	   xnew = theta[M-1]; 
-//	   epsilon += (xnew-theta[M])*(xnew-theta[M]);
-  	   epsilon += norm_EF1(dOld,xnew-theta[M],h,norma);
-	   theta[M]=  xnew; 
-
-	   iter=iter+1;     
-         }while((sqrt(epsilon) > toler) && (iter < itermax) );
-
-      if(iter<itermax)
-        cout << "M="<<M<<"  Convergence in "<<iter<<" iterations"<<endl;
-      else
-        {
-	  cerr << "NOT CONVERGING in "<<itermax<<" iterations "<<
-	    "||dx||="<<sqrt(epsilon)<<endl;
-	  status=1;
-        }
-    }
-    //Uso algoritmo di Thomas
-    else{
-      vector<double> a(M,-1.),b(M+1,2.+h*h*act),c(M,-1.),f(M+1,0.);
-      b[M]=1.; b[0]=1.;c[0]=0.;f[0]=(To-Te)/Te;
-      theta=My_Thomas(a,b,c,f);
-    }
-
- // Analitic solution
-
+ // Analitic solution  
     vector<double> thetaa(M+1);
      for(int m=0;m <= M;m++)
        thetaa[m]=Te+(To-Te)*cosh(sqrt(act)*(1-m*h))/cosh(sqrt(act));
 
-     // writing results with format
+// writing results with format
      // x_i u_h(x_i) u(x_i) and lauch gnuplot 
 
      std::vector<double> coor(M+1);
      std::vector<double> sol(M+1);
      std::vector<double> exact(M+1);
-     if(Ex!=0)
-     {
-       cout<<"Result file: "<<Nome<<endl;
-       ofstream f(Nome);
+//Inizializzo la matrice temporale
+     vector<double> a(M,-cfl),b(M+1,1.+2.*cfl+act*dt),c(M,-cfl);
+        b[M]=1.; b[0]=1.;c[0]=0.;a[M-1]=-1.; theta_old[M]=0;
      
-       for(int m = 0; m<= M; m++)
-         {
-           // \t writes a tab 
-           f<<m*h*L<<"\t"<<Te*(1.+theta[m])<<"\t"<<thetaa[m]<<endl;
-	   
-         }
-       f.close();
-       
-     }
+     std::cout<<"Sono al passo 0/"<<N<<" e theta[0]="<<theta_old[0]<<" CFL="<<cfl<<" a="<<act<<"\n\n"; 
+     double err;
 
-     if(Ex!=1){
-       for(int m = 0; m<= M; m++)
-         {
-           // An example of use of tie and tuples!
-	   std::tie(coor[m],sol[m],exact[m])=
-	     std::make_tuple(m*h*L,Te*(1.+theta[m]),thetaa[m]);
-         }
-       Gnuplot gp;
-       // Using temporary files (another nice use of tie)
-       gp<<"plot"<<gp.file1d(std::tie(coor,sol))<<
-         "w lp title 'uh',"<< gp.file1d(std::tie(coor,exact))<<
-         "w l title 'uex'"<<std::endl;
-     }     
+// risolvo seguendo il passo temporale e plotto
+     for(int tt=1;tt<N;tt++)
+     {
+        err=0.;
+        theta_old=theta=My_Thomas(a,b,c,theta_old);
+        theta_old[M]=0;
+        
+        
+	
+        if(tt==5 || tt==10 || tt==15 || tt==20 || tt==25 || tt==30 || tt==35 || tt==40 || tt==45){
+        for(int m = 0; m<= M; m++)
+           {
+             // An example of use of tie and tuples!
+	     std::tie(coor[m],sol[m],exact[m])=
+	       std::make_tuple(m*h*L,Te*(1.+theta[m]),thetaa[m]);
+           }
+        for(int ww=0; ww<M;ww++){if(err<abs(theta[ww]-thetaa[ww])){err=abs(Te*(1.+theta[ww])-thetaa[ww]);}}
+        std::cout<<"Sono al passo "<<tt<<"/"<<N<<" e err_rel="<<err/To<<"\n\n";
+
+        Gnuplot gp;
+        // Using temporary files (another nice use of tie)
+        gp<<"plot"<<gp.file1d(std::tie(coor,sol))<<
+          "w lp title 'uh',"<< gp.file1d(std::tie(coor,exact))<<
+          "w l title 'uex'"<<std::endl;
+        }
+     }  
      return status;
 }
