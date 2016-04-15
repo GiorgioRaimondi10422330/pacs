@@ -19,12 +19,10 @@ k=0.164
 # Convection coefficient
 hc=200.0e-6
 # Number of elements
-M=11
-# Nome file in Uscita
-Nome=giorgio.dat
-# Uscita scelta
-Ex=2
-# Norma scelta
-norma=1
-# Metodo Scelto
-Metodo=0
+M=40
+# Tempo iniziale
+Tempo0=0
+# Tempo finale
+Tempo1=2
+# Elementi temporali
+N=41

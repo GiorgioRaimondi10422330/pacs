@@ -23,15 +23,14 @@ struct parameters
   double hc;
   //! Number of elements
   int M;
-  //! Nome del file in uscita
-  std::string Nome;
-  //! Se voglio il grafico 0, se voglio i dati in uscita 1 , se voglio entrambi 2
-  int Ex;
-  //! Norma scelta: 0 ->L2, 1 ->H1
-  int norma;
-  //! Metodo di risoluzione 0->GaussSiedel  1->Thomas
-  int Metodo;
+  //! Tempo iniziale
+  double Tempo0;
+  //! Tempo finale
+  double Tempo1;
+  //! Numero di elementi temporali
+  int N;
   //! Constructor takes default values
+
   
 
   parameters():
@@ -45,9 +44,9 @@ struct parameters
     k(0.164),
     hc(1.e-6*200.),
     M(100),
-    Ex(2),
-    norma(0),
-    Metodo(0)
+    Tempo0(0),
+    Tempo1(2),
+    N(20)
   {}
 };
 //! Prints parameters
