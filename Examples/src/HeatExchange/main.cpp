@@ -126,7 +126,7 @@ int main(int argc, char** argv)
     else{
       vector<double> a(M,-1.),b(M+1,2.+h*h*act),c(M,-1.),f(M+1,0.);
       b[M]=1.; b[0]=1.;c[0]=0.;f[0]=(To-Te)/Te;
-      theta=My_Thomas(a,b,c,f);
+      My_Thomas(a,b,c,f,theta);
     }
 
  // Analitic solution
