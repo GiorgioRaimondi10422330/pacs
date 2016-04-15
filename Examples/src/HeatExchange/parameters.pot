@@ -26,3 +26,5 @@ Tempo0=0
 Tempo1=2
 # Elementi temporali
 N=41
+# Ogni quanti step stamp
+stamp=8

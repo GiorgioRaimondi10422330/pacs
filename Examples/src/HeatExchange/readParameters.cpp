@@ -34,6 +34,7 @@ parameters readParameters(std::string const & filename,bool verbose)
   values.Tempo0=ifile("Tempo0",defaults.Tempo0);
   values.Tempo1=ifile("Tempo1",defaults.Tempo1);
   values.N=ifile("N",defaults.N);
+  values.stamp=ifile("stamp",defaults.stamp);
   if(verbose)
     {
       std::cout<<"PARAMETER VALUES IN GETPOT FILE"<<"\n";

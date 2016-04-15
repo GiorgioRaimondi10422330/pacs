@@ -5,7 +5,6 @@
 #include <tuple>
 #include "readParameters.hpp"
 #include "GetPot.hpp"
-#include "Norme_EF1.hpp"
 #include "My_Thomas.hpp"
 #include "gnuplot-iostream.hpp"// interface with gnuplot
 /*!
@@ -68,6 +67,7 @@ int main(int argc, char** argv)
   const auto& Tempo0=param.Tempo0; //Tempo iniziale
   const auto& Tempo1=param.Tempo1; //Tempo finale
   const auto& N=param.N;  // Numero elementi temporali
+  const auto& stamp=param.stamp; //Ogni quanti step devo stampare
   //! Precomputed coefficient for adimensional form of equation
   const auto act=2.*(a1+a2)*hc*L*L/(k*a1*a2);
   // mesh size
@@ -93,9 +93,6 @@ int main(int argc, char** argv)
      vector<double> a(M,-cfl),b(M+1,1.+2.*cfl+act*dt),c(M,-cfl);
         b[M]=1.; b[0]=1.;c[0]=0.;a[M-1]=-1.; theta_old[M]=0;
      
-     std::cout<<"Sono al passo 0/"<<N<<" e theta[0]="<<theta_old[0]<<" CFL="<<cfl<<" a="<<act<<"\n\n"; 
-     double err;
-
 // risolvo seguendo il passo temporale e plotto
      for(int tt=1;tt<N;tt++)
      {
@@ -106,21 +103,20 @@ int main(int argc, char** argv)
         
         
 	
-        if(tt==5 || tt==10 || tt==15 || tt==20 || tt==25 || tt==30 || tt==35 || tt==40 || tt==45){
-        for(int m = 0; m<= M; m++)
+        if((tt%stamp)==0){
+          for(int m = 0; m<= M; m++)
            {
              // An example of use of tie and tuples!
 	     std::tie(coor[m],sol[m],exact[m])=
 	       std::make_tuple(m*h*L,Te*(1.+theta[m]),thetaa[m]);
            }
-        for(int ww=0; ww<M;ww++){if(err<abs(theta[ww]-thetaa[ww])){err=abs(Te*(1.+theta[ww])-thetaa[ww]);}}
-        std::cout<<"Sono al passo "<<tt<<"/"<<N<<" e err_rel="<<err/To<<"\n\n";
+          std::cout<<"Sono al passo "<<tt<<"/"<<N<<"\n\n";
 
-        Gnuplot gp;
-        // Using temporary files (another nice use of tie)
-        gp<<"plot"<<gp.file1d(std::tie(coor,sol))<<
-          "w lp title 'uh',"<< gp.file1d(std::tie(coor,exact))<<
-          "w l title 'uex'"<<std::endl;
+          Gnuplot gp;
+          // Using temporary files (another nice use of tie)
+          gp<<"plot"<<gp.file1d(std::tie(coor,sol))<<
+            "w lp title 'uh',"<< gp.file1d(std::tie(coor,exact))<<
+            "w l title 'uex'"<<std::endl;
         }
      }  
      return status;

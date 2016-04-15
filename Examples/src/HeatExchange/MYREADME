@@ -1,0 +1,7 @@
+Questo branch contiene la risoluzione per il Challenge 1.3_Extra
+
+Utilizzo il metodo di eulero all'indietro
+
+La risoluzione della matrice computata ad ogni step la faccio tramite l'algoritmo My_Thomas
+
+Il parametro stamp serve a specificare ogni quanti step voglio vedere il plot della soluzione calcolata a quello step

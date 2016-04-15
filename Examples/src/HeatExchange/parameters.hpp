@@ -29,6 +29,8 @@ struct parameters
   double Tempo1;
   //! Numero di elementi temporali
   int N;
+  //! ogni quanti step stampo
+  int stamp;
   //! Constructor takes default values
 
   
@@ -46,7 +48,8 @@ struct parameters
     M(100),
     Tempo0(0),
     Tempo1(2),
-    N(20)
+    N(20),
+    stamp(5)
   {}
 };
 //! Prints parameters
