@@ -23,8 +23,8 @@ M=11
 # Nome file in Uscita
 Nome=giorgio.dat
 # Uscita scelta
-Ex=2
+Ex=1
 # Norma scelta
 norma=1
 # Metodo Scelto
-Metodo=0
+Metodo=1
