@@ -5,10 +5,10 @@
 #include<iostream>
 #include<vector>
 
-template <typename T>
-std::vector<T> My_Thomas(const std::vector<T> &a,const std::vector<T> &b,const std::vector<T> &c, const std::vector<T> &f){
+template <typename T,typename V>
+void My_Thomas(const std::vector<T> &a,const std::vector<T> &b,const std::vector<T> &c, const std::vector<T> &f, std::vector<V> &x){
   unsigned const int N=b.size();
-  std::vector<T> c_new(N),d(N),x(N);
+  std::vector<V> c_new(N),d(N);
   c_new[0]=c[0]/b[0];
   d[0]=f[0]/b[0];
   for(unsigned int i=1;i<N-1;i++){
@@ -19,7 +19,7 @@ std::vector<T> My_Thomas(const std::vector<T> &a,const std::vector<T> &b,const s
   for(unsigned int i=1;i<N;i++){
     x[N-1-i]=d[N-1-i]-c_new[N-1-i]*x[N-i];
   }
-  return x;
+
 }
 
 #endif

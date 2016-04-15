@@ -100,7 +100,8 @@ int main(int argc, char** argv)
      for(int tt=1;tt<N;tt++)
      {
         err=0.;
-        theta_old=theta=My_Thomas(a,b,c,theta_old);
+        My_Thomas(a,b,c,theta_old,theta);
+        theta_old=theta;
         theta_old[M]=0;
         
         
