@@ -1,0 +1,5 @@
+#!/bin/bash
+
+./main -p H1.pot
+
+./main -p L2.pot
