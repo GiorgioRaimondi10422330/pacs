@@ -4,7 +4,11 @@
 #include <vector>
 #include <array>
 #include <utility>
-
+#include<vector>
+#include<string>
+#include<sstream>
+#include<memory>
+#include<fstream>
 /*!  @file Polygon.hpp 
   @brief This is an example of class hierarchy that
   represents poligonal object.
@@ -192,6 +196,21 @@ namespace Geometry
     //! Specialised for Triangles
     virtual void showMe(std::ostream & out=std::cout) const;
   };
+
+
+  class Grid
+   {
+     std::vector<Point2D> Points;
+     std::vector<std::shared_ptr<AbstractPolygon>> Figure;
+
+     public:
+     
+     Grid ()=default;
+     void Build(const std::string  & name);
+     Grid(const Grid & G);
+     Grid & operator=(const Grid & G);
+     double Full_Area();
+   };
   
 }
 

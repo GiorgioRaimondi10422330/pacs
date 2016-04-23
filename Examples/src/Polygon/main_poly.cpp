@@ -4,7 +4,7 @@
 int main()
 {
   using namespace Geometry;
-
+/*
   //! five vertices
   Vertices v(5);
 
@@ -33,7 +33,12 @@ int main()
   Square s2(aSquare); 
   AbstractPolygon & r_ab=s2;
   r_ab.showMe();
-  std::cout<<"Area: "<<r_ab.area()<<std::endl;
+  std::cout<<"Area: "<<r_ab.area()<<std::endl;*/
+  Grid P;
+  P.Build("mesh.dat");
+  std::cout<<"L'area totale è "<<P.Full_Area()<<"\n\n";
+  return 0;
+
 }
   
 

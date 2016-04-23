@@ -5,7 +5,13 @@
 #include <cmath>
 #include <stdexcept>
 #include <limits>
-namespace Geometry{
+#include<vector>
+#include<string>
+#include<memory>
+#include<sstream>
+#include<fstream>
+namespace Geometry
+{
   
   double distance(Point2D const & a, Point2D const & b){
     // Not very efficient. This function should be implemented either
@@ -195,4 +201,141 @@ namespace Geometry{
     out<<"A Triangle"<<std::endl;
     AbstractPolygon::showMe(out);
   }
+
+  //*******************   GRID   ****************************//
+
+
+  void Grid::Build (const std::string  & name)
+  {
+     std::vector<Point2D> vert;
+     std::vector<std::shared_ptr<AbstractPolygon>> Pol;
+
+
+     if (name.empty()) {std::cout<<"Errore\n\n";}
+     else
+     {
+       std::ifstream f(name);
+
+       if (f.is_open())
+       {                                             //Se il file è correttamente aperto
+          std::string riga,valore;
+          getline(f,riga);                                       //Leggo la prima riga
+          if (riga.empty())
+          {                                         //Se la prima riga è vuota
+             std::cout<<"Il file è vuoto"<<std::endl;
+             f.close();   
+          }
+          else
+          {
+              std::stringstream ss(riga);
+              unsigned int NP,NR;
+    	
+    	      if(getline(ss,valore,' '))
+              {
+                 NP=stoul(valore);
+              }
+              else
+              {
+    	         std::cout<<"Il file è vuoto"<<std::endl;
+    	         f.close();                                              //Chiudo
+       	      }
+	      if(getline(ss,valore,' '))
+              {
+                 NR=stoul(valore);
+              }
+              else
+              {
+                  std::cout<<"Il file è vuoto"<<std::endl;
+	          f.close();                                              //Chiudo
+	      }
+	  
+              std::vector<Point2D> vert;
+              double x,y;
+              for(unsigned int i=0;i<NP;i++) //leggo i punti
+	      {
+	    	  if(getline(f,riga))
+                  {
+                     std::stringstream ss1(riga);
+                     getline(ss1,valore,' '); //indica il numero dell'elemento
+                     getline(ss1,valore,' '); //indica la x del punto
+                     x=stod(valore);
+		     getline(ss1,valore,' '); //indica la y del punto
+                     y=stod(valore);
+		     vert.push_back(Point2D (x,y));
+                  }
+	      }
+              for(unsigned int i=0;i<NR;i++)
+              {
+	   	  unsigned int Tipo;
+
+                  if(getline(f,riga))
+		  {
+		      std::stringstream ss2(riga);
+		      unsigned int pos;
+		      std::vector<Point2D> vert_pol;
+		      getline(ss2,valore,' '); //indica il numero dell'elemento
+		      getline(ss2,valore,' '); //indica il tipo dell'elemento
+                      Tipo=stoul(valore);
+		      while(getline(ss2,valore,' '))
+		      {
+			  pos=stoul(valore);
+			  vert_pol.push_back(vert[pos]);
+		      }
+    		      if(Tipo==0)
+		      {
+			 Triangle t(vert_pol); 
+			 Pol.push_back(std::make_shared<Triangle> (t));		
+                      }
+		      else if (Tipo==1)
+                      {
+ 		         Square t(vert_pol);  
+                         Pol.push_back(std::make_shared<Square> (t));
+                      }
+  		      else 
+                      {   
+                         Polygon t(vert_pol);
+		         Pol.push_back(std::make_shared<Polygon> (t));
+                      }
+                  }
+              }
+              f.close();
+          }    
+       }
+     Points=vert;
+     Figure=Pol;
+     }
+
+
+  }
+
+  
+  Grid::Grid (const Grid & G)
+  {
+      Points=G.Points;
+      Figure=G.Figure;
+  }
+
+  
+  Grid & Grid::operator=(const Grid & G)
+  {
+      Points=G.Points;
+      Figure=G.Figure;
+      return *this;
+  }
+
+
+  double Grid::Full_Area()
+  {
+      unsigned int N=Figure.size();
+      double Area=0.;
+      for(unsigned int i=0; i<N; i++)
+      {
+         Area+=Figure[i]->area();
+      }
+      return Area;
+  }
+
+
+
+
 }
