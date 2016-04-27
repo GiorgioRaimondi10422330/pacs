@@ -45,7 +45,8 @@ EXEC=$(exe_sources:.cpp=)
 all: $(DEPEND) $(EXEC)
 
 clean:
-	$(RM) -f $(EXEC) $(OBJS)
+	$(RM) -f $(EXEC) $(OBJS) 
+	-rm -f All.dat Internal.dat External.dat
 
 distclean:
 	$(MAKE) clean

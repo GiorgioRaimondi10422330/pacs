@@ -4,7 +4,11 @@
 #include <vector>
 #include <array>
 #include <utility>
-
+#include<vector>
+#include<string>
+#include<sstream>
+#include<memory>
+#include<fstream>
 /*!  @file Polygon.hpp 
   @brief This is an example of class hierarchy that
   represents poligonal object.
@@ -19,14 +23,12 @@
    */
 namespace Geometry
 {
-  
-
   //! A class that holds 2D points
-  /*! It also represents a vector in R2
+    /*! It also represents a vector in R2
    */
   class Point2D
-  {
-  public:
+   {
+   public:
     //! Constructor giving coordinates.
     Point2D(double xx=0.0, double yy=0.0):coor{{xx,yy}}{}
     //! Copy constructor
@@ -35,36 +37,33 @@ namespace Geometry
     std::array<double,2> get() const { return coor;}
     //! Sets point coordinates
     void set(double const &xx, double const &yy)
-    {
+     {
       coor={{xx,yy}};
-    }
+     }
     //! x coordinate
     double x() const {return coor[0];}
     //! y coordinate
     double y() const {return coor[1];}
+
     //! Subtraction is implemented as an external friend function
     friend Point2D operator - (Point2D const & a, Point2D const & b);
     //! Addition is implemented as an external friend function
     friend Point2D operator + (Point2D const & a, Point2D const & b);
-  private:
+   private:
     std::array<double,2> coor;
-  };
+   };
 
   //! An alias
   using R2Vector=Point2D;
 
   //! subtraction operator.
-  /*!  
-    It is defined in the header file because I want it to be
-    inline.
-  */
   inline Point2D operator - (Point2D const & a, Point2D const & b){
     return Point2D(a.coor[0]-b.coor[0],
                    a.coor[1]-b.coor[1]);
-  }
+   }
 
-  //! Addition operator.
-  /*!  
+   //! Addition operator.
+   /*!  
     It is defined in the header file because I want it to be
     inline.
   */
@@ -73,35 +72,31 @@ namespace Geometry
                    a.coor[1]+b.coor[1]);
   }
 
+  bool compare(const Point2D & A,const Point2D & B );
   //! Distance between points
   double distance(Point2D const & a, Point2D const & b);
  
   //! Polygon vertices are just vectors of points.
   using Vertices=std::vector<Point2D>;
 
-  //! Defines the common interface of polygons.
+  
+  //Fatto
   class AbstractPolygon
-  {
-  public:
-    //! Constructor taking vertices
-    /*! 
-      It checks convexity if check=true
-     */
-    AbstractPolygon(Vertices const & v, bool check=true);
-    //! Default constructor is defaulted
-    /*! 
-      It is up to the derived classes to fill the vertexex and other info correctly
-    */
-    AbstractPolygon()=default;
-    //! Assignment
+   {
+   public:
+    //Fatto
+    AbstractPolygon(std::vector<Point2D> & G, std::vector<unsigned int> const & Position ,bool check=true);
+    //Fatto
+    AbstractPolygon();
+    //Fatto
     AbstractPolygon & operator=(AbstractPolygon const&)=default;
-    //! Copy constructor
+    //Fatto
     AbstractPolygon(AbstractPolygon const &)=default;
-    //! Move constructor
+    //Fatto
     AbstractPolygon(AbstractPolygon&&)=default;
-    //! Move constructor
+    //! Fatto
     AbstractPolygon & operator=(AbstractPolygon&&)=default;
-    //! virtual destructor
+    // Fatto... NB non chiamo distuctor per il puntatore perchè appartiene a Grid
     virtual ~AbstractPolygon(){};
     //! Returns the number of vertices.
     /*!  We return Vertices::size_type and not just int because
@@ -111,88 +106,124 @@ namespace Geometry
       guaranteed to be an integral type, more precisely
       a type convertible to unsigned int).
     */
-    Vertices::size_type size() const {return vertexes.size();}
-    //! Is the polygon convex?
+    //Fatto
+    Vertices::size_type size() const {return Pos_Vertices.size();}
+    //Fatto
     bool isConvex() const {return isconvex;}
-    //! Returns the vertices (read only)
-    Vertices const & theVertices()const {return vertexes;}
-    //! Outputs some info on the polygon
+
+    Point2D & operator [](const unsigned int P);
+    //Fatto
     virtual void showMe(std::ostream & out=std::cout) const;
-    //! The area of the polygon (with sign!).
-    /*!
-      It is a pure virtual function.
-      The implementation is left to the derived classes.
-    */
+    //Fatto
     virtual double area() const=0;
-  protected:
-    Vertices vertexes;
+   protected:
+    std::vector<Point2D>* All_Vertices;
+    std::vector<unsigned int> Pos_Vertices;
+
     bool isconvex;
     //! Test convexity of the polygon
     void checkConvexity();
-  };
-
-  //! Class for a generic Polygon
-  /*
-    A generic Polygon is defined by a set of Vertices which are
-    provided by the user
-   */
+   };
+  //Fatto
   class Polygon: public AbstractPolygon
-  {
-  public:
-    //! Default constructor.
-    //! Polygon may be constructed giving Vertices;
-    Polygon(Vertices const & v);
-    //! Destructor
+   {
+   public:
+    //
+    //Fatto;
+    Polygon(std::vector<Point2D> & G,std::vector<unsigned int> const & Position);
+    //Fatto
     virtual ~Polygon(){};
-    /*!
-      The area is positive if vertices are given in 
-      counterclockwise order
-    */
+    //Fatto
     virtual double area() const;
-    //! Specialised version for generic polygons.
+    //Fatto
     virtual void showMe(std::ostream & out=std::cout) const;
-  };
+   };
 
-  //! A square
-  /*!
-    The square is a final class derived from polygon.
-   */
   class Square final: public AbstractPolygon
-  {
-  public:
-    Square(Vertices const & v);
-    //!Special constructor valid only for squares.
-    /*!
-      /param origin Point which gives the first vertex of the square.
-      /param length The length of the side.
-      /param angle In radians, tells how the square is  rotated. 
-     */
-    Square(Point2D origin, double length,double angle=0.0);
+   {
+   public:
+    //Fatto
+    Square(std::vector<Point2D> & G,std::vector<unsigned int> const & Position);
+    //Fatto
     Square(Square const &)=default;
+    //Fatto
     Square(Square&&)=default;
+    //Fatto
     Square & operator=(const Square &)=default;
+    //Fatto
     Square & operator=(Square &&)=default;
     //! Specialised version for squares
     double area() const;
     //! Specialised version for squares.
     void showMe(std::ostream & out=std::cout) const;
-  };
-  
+   }; 
   //! A triangle
   class Triangle final: public AbstractPolygon
-  {
-  public:
-    Triangle(Vertices const &);
+   {
+   public:
+    //Fatto
+    Triangle( std::vector<Point2D> & G,std::vector<unsigned int> const & Position);
+    //Fatto
     Triangle(Triangle const &)=default;
+    //Fatto
     Triangle(Triangle&&)=default;
+    //Fatto
     Triangle & operator=(const Triangle &)=default;
+    //Fatto
     Triangle & operator=(Triangle &&)=default;
-    //! Specialised for Triangles
+    //Fatto
     virtual double area() const;
-    //! Specialised for Triangles
+    //Fatto
     virtual void showMe(std::ostream & out=std::cout) const;
-  };
+   };
+
+  class Edge
+   {
+    unsigned int pos1, pos2;
+
+    public:
+
+    Edge():pos1(0),pos2(0){};
+
+    Edge(const Edge & E):pos1(E.pos1),pos2(E.pos2){};
+
+    Edge(const unsigned int p1, const unsigned int p2):pos1(p1),pos2(p2){};
+
+    Edge operator =(const Edge E){ pos1=E.pos1; pos2=E.pos2; return *this;};
+
+    bool Edge_Intern(const std::vector<std::shared_ptr<AbstractPolygon>> &  IPol,const std::vector<Point2D> & Points);
+
+    bool compared(unsigned int p1, unsigned int p2 )    {      return ( (pos1==p1 && pos2==p2 ) || (pos1==p2 && pos2==p1 ) );    }
+
+    bool compared(const Edge & E){return ( (pos1==E.pos1 && pos2==E.pos2 ) || (pos1==E.pos2 && pos2==E.pos1 ) );}
+
+    void print(std::ostream & out, unsigned int Pos=0) ;
+   };
   
-}
+  class Grid
+   {
+     std::vector<Point2D> Points;
+     std::vector<std::shared_ptr<AbstractPolygon> > Figure;
+     std::vector<Edge> All_Edges, Internal_Edges;
+     friend class Triangle;
+     friend class Square;
+     friend class Polygon;
+     friend class Edge;
+     friend class AbstractPolygon;
+     
+     public:
+     
+     Grid ()=default;
+     void Build(const std::string  & name);
+     Grid(const Grid & G);
+     Grid & operator=(const Grid & G);
+     double Full_Area();
+     void printG(std::ostream & out, unsigned int All=0) ;
+   };
+  
+
+
+
+};
 
 #endif
