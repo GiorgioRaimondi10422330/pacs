@@ -13,6 +13,7 @@
 namespace Geometry
 {
   
+
   double distance(Point2D const & a, Point2D const & b){
     // Not very efficient. This function should be implemented either
     // as friend or as a method, to access private members.

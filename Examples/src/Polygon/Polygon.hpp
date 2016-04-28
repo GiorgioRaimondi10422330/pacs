@@ -25,6 +25,7 @@ namespace Geometry
 {
   
 
+
   //! A class that holds 2D points
   /*! It also represents a vector in R2
    */
