@@ -291,7 +291,6 @@ namespace Geometry
 
                        while (entra && cont<All_Edges.size())
                        { 
-                         std::cout<<"Al solido "<<i<<" vertice "<<K<<" cont="<<cont<<" ho "<<All_Edges[cont].compared(vert_pol[K],vert_pol[(K+1)%vert_pol.size()])<<"\n\n";
                          if(All_Edges[cont].compared(vert_pol[K],vert_pol[(K+1)%vert_pol.size()]))
                           {
                             entra=0;
@@ -309,8 +308,6 @@ namespace Geometry
                        cont=0;
                        entra=1;
                      }
-                     std::cout<<"Dimensione All ="<<All_Edges.size()<<"\n\n";
-
                     }
                }
               f.close();
