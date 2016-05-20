@@ -1,7 +1,7 @@
 OBJS = fem1d.o mesh.o
 HEADERS = 
-CPPFLAGS = -I../matrix-0.1/ -I. -I$(mkOpenblasLib)
-LDFLAGS = -L../matrix-0.1/ 
+CPPFLAGS = -I/home/pacs_student/Material/Exercises/2016/02_getpot/matrix-0.1 -I. -I$(mkOpenblasLib)
+LDFLAGS = -L/home/pacs_student/Material/Exercises/2016/02_getpot/matrix-0.1 
 LDFLAGS+= -L$(mkOpenblasLib)
 LIBS += -lopenblas
 CXXFLAGS+= -std=c++11

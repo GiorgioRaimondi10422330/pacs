@@ -5,7 +5,7 @@ fem1d : $(OBJS)
 	$(CXX) $(LDFLAGS) $(OBJS) -o $@ $(LIBS)
 
 $(OBJS) : %.o : %.cpp %.h $(HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $<
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -std=c++11 -c $<
 
 .PHONY: clean distclean
 

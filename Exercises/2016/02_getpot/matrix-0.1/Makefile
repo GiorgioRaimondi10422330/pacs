@@ -27,7 +27,7 @@ speedup.pdf : run_test.m
 	octave $<
 
 $(OBJS) : %.o : %.cpp %.h 
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $<
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -std=c++11 -c $<
 
 $(TEST_OBJS) : %.o : %.cpp %.h 
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $<
