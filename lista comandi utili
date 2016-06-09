@@ -1,0 +1,29 @@
+pdflatex <nomefile.tex>   per creare i pdf
+
+yum				per installare qualcosa
+password github			familyfour4
+
+https://help.github.com/articles/syncing-a-fork/                             per avere la sincronizzazione tra il loro github ed il mio
+
+
+export LD_LIBRARY_PATH=/home/pacs_student/Material/Exercises/2016/06_quadrature_plugin/fem1d-0.8/MySolution:/home/pacs_student/usr/lib:$LD_LIBRARY_PATH
+per loadare le shared library
+
+git log 
+per leggere i commit
+
+module avail  
+per capire quali moduli caricare
+
+
+module load gcc+system
+module load eigen
+#module load boost-debug-mpi
+#module load gnuplot
+module load openblas
+module load eigen/3
+module load octave/3.8
+
+
+git remote set-url origin https://GiorgioRaimondi10422330@github.com/GiorgioRaimondi10422330/pacs.git
+git remote add upstream https://github.com/pacs-course/pacs.git
