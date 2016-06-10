@@ -1,0 +1,16 @@
+Questa cartella contiene la soluzione al Challenge 3.1
+
+Il file Method.cpp contiene le funzioni che modificano i Butcher
+per il metodo Runge-Kutta
+
+Il file main_MyRK.cpp serve per testare il metodo di RK
+nei casi di RK45 e RK12
+
+
+per compilare la versione di prova usare il comando 
+make main
+
+per compilare ed eseguire usare il comando
+make exec
+
+
